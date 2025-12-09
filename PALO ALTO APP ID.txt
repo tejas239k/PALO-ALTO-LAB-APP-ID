@@ -1,0 +1,98 @@
+PALO ALTO LAB APP-ID
+
+setting up the palo alto
+
+configure
+set deviceconfig system type static
+set deviceconfig system ip-address 192.168.10.10 netmask 255.255.255.0
+commit
+
+Network>Interfaces>ethernet1/1
+Interface Name: ethernet1/1
+Interface Type: Layer3
+Config
+Virtual Router: Default
+Security Zone: Inside
+IPv4
+add
+192.168.20.10/24
+ok
+ethernet1/2
+Interface Name: ethernet1/2
+Interface Type: Layer3
+Config
+Virtual Router: Default
+Security Zone: Outside
+IPv4
+DHCP Client
+ok
+
+Policies>Security
+add
+General
+Name: INSIDE-TO-OUTSIDE
+Source
+Source Zone
+add
+Inside
+Source Address
+add
+192.168.20.0/24
+Destination
+Destination Zone
+add
+Outside
+Destination Source
+any
+ok
+
+Policies>NAT
+add
+General
+Name:
+Nat_Policy
+Original Packet
+Source Zone
+add
+Inside
+Destination Zone
+outside
+Source address
+add
+192.168.20.0/24
+Destination address
+any
+Translated Packet
+Source Address Translation
+Translation Type: Dynamic IP and Port
+Address Type: Interface Address
+Interface: ethernet1/2
+ok
+COMMIT
+
+Now at this point of time if we go to the client pc and try to accesss
+www.youtube.com
+www.google.com
+www.facebook.com
+we'll be able to access it.
+
+Now to see how the app id works will try to block everything except for www.youtube.com
+
+We'll go to the same policy we had created earlier i.e
+INSIDE-TO-OUTSIDE
+Application
+add
+youtube-base
+the moment you select youtube-base you'll see that 
+youtube-base depends on google-base and we also need to add 
+it to the current rule or else we won't be able to access
+youtube
+ok
+COMMIT
+Now when you go to the client pc you'll only be able to access
+www.youtube.com
+www.google.com
+and not www.facebook.com
+
+DONE!!
+
